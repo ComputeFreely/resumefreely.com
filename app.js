@@ -367,7 +367,6 @@ function renderPreview() {
   renderResumePreview();
   renderLetterPreview();
   els.documentMeta.textContent = activeMode === "resume" ? "Resume" : "Cover letter";
-  els.printCurrentButton.textContent = activeMode === "resume" ? "Save resume PDF" : "Save letter PDF";
   els.resumePreview.hidden = activeMode !== "resume";
   els.letterPreview.hidden = activeMode !== "letter";
 }
