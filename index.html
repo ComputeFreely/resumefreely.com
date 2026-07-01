@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Build an ATS-friendly resume and cover letter in your browser with free PDF download, local autosave, templates, and JSON import/export. No signup, upload, watermark, or paywall.">
+    <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+    <meta name="theme-color" content="#f5f4ee">
+    <meta name="application-name" content="Resume Freely">
+    <meta property="og:title" content="Free Resume Builder No Signup, Free PDF Download | Resume Freely">
+    <meta property="og:description" content="Create an ATS-friendly resume and matching cover letter locally in your browser. Free templates, PDF export, no signup, no watermark, and no download gate.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://resumefreely.com/">
+    <meta property="og:site_name" content="Resume Freely">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Free Resume Builder No Signup | Resume Freely">
+    <meta name="twitter:description" content="Free local resume builder with ATS-friendly templates, cover letters, JSON import/export, and browser PDF download.">
+    <title>Free Resume Builder No Signup, Free PDF Download | Resume Freely</title>
+    <link rel="canonical" href="https://resumefreely.com/">
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="AI-readable site summary">
+    <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assets/shared/freely-ui.css">
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://computefreely.com/#organization",
+            "name": "Compute Freely",
+            "url": "https://computefreely.com/"
+          },
+          {
+            "@type": "WebApplication",
+            "@id": "https://resumefreely.com/#app",
+            "name": "Resume Freely",
+            "url": "https://resumefreely.com/",
+            "description": "A free local browser resume builder with ATS-friendly resume templates, a cover letter builder, local autosave, JSON import/export, plain-text copy, and browser PDF output.",
+            "applicationCategory": "UtilitiesApplication",
+            "operatingSystem": "Any modern browser",
+            "browserRequirements": "Requires JavaScript, localStorage, Blob, and browser print support.",
+            "isAccessibleForFree": true,
+            "publisher": {
+              "@id": "https://computefreely.com/#organization"
+            },
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD",
+              "url": "https://resumefreely.com/"
+            },
+            "featureList": [
+              "Structured resume editor",
+              "ATS-friendly resume templates",
+              "Cover letter builder",
+              "Browser print-to-PDF workflow",
+              "Local autosave",
+              "JSON import and export",
+              "Plain-text resume copy",
+              "Resume quality checks"
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://resumefreely.com/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Does Resume Freely upload my resume?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Resume Freely edits and stores resume content in the browser and does not require an upload step."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I download a PDF for free?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. Use the browser print dialog to save your resume or cover letter as a PDF. There is no account, watermark, or download paywall."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Are the templates ATS friendly?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "The templates are designed with readable headings, real text, simple section order, and conservative layouts. Users should still review the final PDF before submitting."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I move my resume to another browser?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. Export the resume JSON file and import it in another browser."
+                }
+              }
+            ]
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://resumefreely.com/#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Compute Freely",
+                "item": "https://computefreely.com/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Resume Freely",
+                "item": "https://resumefreely.com/"
+              }
+            ]
+          }
+        ]
+      }
+    </script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Resume Freely home">
+        <img class="brand-mark" src="assets/icons/favicon.svg" alt="" width="40" height="40" aria-hidden="true">
+        <span>
+          <strong>Resume Freely</strong>
+          <small>Local resume builder</small>
+        </span>
+      </a>
+      <div class="topbar-actions">
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="#builder">Builder</a>
+          <a href="#templates">Templates</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+        <div class="guarantee-pills" aria-label="Site guarantees">
+          <span class="status-pill">Free PDF</span>
+          <span class="status-pill">No signup</span>
+          <span class="status-pill">No upload</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="resume-shell app-shell" id="builder">
+      <section class="workspace-pane editor-pane" aria-labelledby="builderTitle">
+        <div class="workspace-header">
+          <div>
+            <p class="eyebrow">Resume Builder</p>
+            <h1 id="builderTitle">Build a clean resume and cover letter locally</h1>
+          </div>
+          <div class="engine-badge" id="saveStatus" aria-live="polite">Autosaved</div>
+        </div>
+
+        <div class="promise-strip" aria-label="Freely promise">
+          <strong>No account. No upload. No watermark. No download gate.</strong>
+          <a href="https://computefreely.com/">Compute Freely promise</a>
+        </div>
+
+        <div class="mode-tabs" role="tablist" aria-label="Document editor">
+          <button class="mode-tab active" type="button" role="tab" aria-selected="true" aria-controls="resumeEditor" id="resumeTab" data-mode="resume">Resume</button>
+          <button class="mode-tab" type="button" role="tab" aria-selected="false" aria-controls="letterEditor" id="letterTab" data-mode="letter">Cover letter</button>
+        </div>
+
+        <div class="action-row">
+          <button class="button primary" type="button" id="printResumeButton">Save resume PDF</button>
+          <button class="button" type="button" id="printLetterButton">Save letter PDF</button>
+          <button class="button" type="button" id="copyTextButton">Copy text</button>
+          <button class="button" type="button" id="exportButton">Export JSON</button>
+          <label class="button file-button" for="importInput">Import JSON</label>
+          <input class="sr-only" id="importInput" type="file" accept="application/json,.json">
+        </div>
+
+        <form id="resumeEditor" class="document-editor" role="tabpanel" aria-labelledby="resumeTab">
+          <section class="panel compact-panel" aria-labelledby="startTitle">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Start</p>
+                <h2 id="startTitle">Sample, blank, or saved draft</h2>
+              </div>
+            </div>
+            <div class="button-grid">
+              <button class="mini-button" type="button" id="sampleButton">Load sample</button>
+              <button class="mini-button" type="button" id="blankButton">Start blank</button>
+              <button class="mini-button danger" type="button" id="clearStorageButton">Clear local draft</button>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="basicsTitle">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Contact</p>
+                <h2 id="basicsTitle">Basics</h2>
+              </div>
+            </div>
+            <div class="field-grid two" id="basicsFields"></div>
+          </section>
+
+          <section class="panel" aria-labelledby="summaryTitle">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Positioning</p>
+                <h2 id="summaryTitle">Summary</h2>
+              </div>
+            </div>
+            <label class="field full">
+              <span>Professional summary</span>
+              <textarea id="summaryInput" rows="5" data-path="resume.summary"></textarea>
+            </label>
+          </section>
+
+          <section class="panel collection-panel" aria-labelledby="experienceTitle">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Work</p>
+                <h2 id="experienceTitle">Experience</h2>
+              </div>
+              <button class="mini-button" type="button" data-add="experience">Add role</button>
+            </div>
+            <div class="collection-list" id="experienceList"></div>
+          </section>
+
+          <section class="panel collection-panel" aria-labelledby="projectsTitle">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Proof</p>
+                <h2 id="projectsTitle">Projects</h2>
+              </div>
+              <button class="mini-button" type="button" data-add="projects">Add project</button>
+            </div>
+            <div class="collection-list" id="projectsList"></div>
+          </section>
+
+          <section class="panel collection-panel" aria-labelledby="educationTitle">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Training</p>
+                <h2 id="educationTitle">Education</h2>
+              </div>
+              <button class="mini-button" type="button" data-add="education">Add school</button>
+            </div>
+            <div class="collection-list" id="educationList"></div>
+          </section>
+
+          <section class="panel collection-panel" aria-labelledby="skillsTitle">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Keywords</p>
+                <h2 id="skillsTitle">Skills</h2>
+              </div>
+              <button class="mini-button" type="button" data-add="skills">Add group</button>
+            </div>
+            <div class="collection-list" id="skillsList"></div>
+          </section>
+
+          <section class="panel collection-panel" aria-labelledby="certificationsTitle">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Optional</p>
+                <h2 id="certificationsTitle">Certifications and awards</h2>
+              </div>
+              <button class="mini-button" type="button" data-add="certifications">Add item</button>
+            </div>
+            <div class="collection-list" id="certificationsList"></div>
+          </section>
+        </form>
+
+        <form id="letterEditor" class="document-editor" role="tabpanel" aria-labelledby="letterTab" hidden>
+          <section class="panel" aria-labelledby="letterTitle">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Cover Letter</p>
+                <h2 id="letterTitle">Targeted letter</h2>
+              </div>
+            </div>
+            <div class="field-grid two" id="letterFields"></div>
+            <label class="field full">
+              <span>Letter body</span>
+              <textarea id="letterBodyInput" rows="14" data-path="letter.body"></textarea>
+            </label>
+          </section>
+        </form>
+      </section>
+
+      <aside class="preview-pane resume-preview-pane" aria-labelledby="previewTitle">
+        <div class="preview-header">
+          <div>
+            <p class="eyebrow">Preview</p>
+            <h2 id="previewTitle">Printable document</h2>
+          </div>
+          <span class="preview-meta" id="documentMeta">Resume</span>
+        </div>
+
+        <section class="panel options-panel" aria-labelledby="templateTitle" id="templates">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Format</p>
+              <h2 id="templateTitle">Template and layout</h2>
+            </div>
+          </div>
+          <div class="field-grid two">
+            <label class="field">
+              <span>Template</span>
+              <select id="templateSelect"></select>
+            </label>
+            <label class="field">
+              <span>Density</span>
+              <select id="densitySelect">
+                <option value="compact">Compact</option>
+                <option value="standard">Standard</option>
+                <option value="roomy">Roomy</option>
+              </select>
+            </label>
+          </div>
+          <div class="field-grid two">
+            <label class="field">
+              <span>Accent</span>
+              <input id="accentInput" type="color" value="#0f948c">
+            </label>
+            <label class="checkline preview-toggle">
+              <input id="showGuidesInput" type="checkbox">
+              <span>Show page edge</span>
+            </label>
+          </div>
+          <div class="template-notes" id="templateNotes"></div>
+        </section>
+
+        <section class="panel score-panel" aria-labelledby="checksTitle">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Checks</p>
+              <h2 id="checksTitle">Resume review</h2>
+            </div>
+            <span class="score-badge" id="scoreBadge">0/0</span>
+          </div>
+          <ul class="check-list" id="checkList"></ul>
+        </section>
+
+        <div class="page-preview-wrap" id="pagePreviewWrap">
+          <article class="resume-document" id="resumePreview" aria-label="Resume preview"></article>
+          <article class="letter-document" id="letterPreview" aria-label="Cover letter preview" hidden></article>
+        </div>
+      </aside>
+    </main>
+
+    <section class="discovery-section" aria-labelledby="discoveryTitle">
+      <div class="discovery-content">
+        <p class="eyebrow">Discovery</p>
+        <h2 id="discoveryTitle">Free resume builder with PDF download</h2>
+        <p class="discovery-lede">Resume Freely is for people searching for a resume builder free no sign up, free resume templates with PDF download, ATS resume template free, CV maker free no signup, and cover letter generator free no sign up. Your draft stays in your browser, and the PDF workflow is available before you start typing.</p>
+        <ul class="search-terms" aria-label="Common Resume Freely searches">
+          <li>resume builder free no sign up</li>
+          <li>free resume builder no paywall</li>
+          <li>resume builder free download PDF</li>
+          <li>ATS resume template free</li>
+          <li>CV maker free no signup</li>
+          <li>cover letter generator free no sign up</li>
+        </ul>
+        <div class="discovery-grid" aria-label="Resume Freely capabilities">
+          <article>
+            <h3>Local structured editor</h3>
+            <p>Edit resume sections, keep a local draft, export JSON, and copy plain text for application forms.</p>
+          </article>
+          <article>
+            <h3>ATS-focused templates</h3>
+            <p>Choose layouts that keep headings clear, preserve real text, and avoid image-based resume exports.</p>
+          </article>
+          <article>
+            <h3>Cover letters included</h3>
+            <p>Draft a matching cover letter and save it through the same browser print-to-PDF workflow.</p>
+          </article>
+        </div>
+        <div class="faq-list" id="faq" aria-label="Resume Freely answers">
+          <article>
+            <h3>Does Resume Freely upload my resume?</h3>
+            <p>No. Your resume is edited in the browser and autosaved to local storage on your device.</p>
+          </article>
+          <article>
+            <h3>Can I download a PDF without paying?</h3>
+            <p>Yes. Use the Save PDF buttons to open your browser print dialog and save a PDF without an account or watermark.</p>
+          </article>
+          <article>
+            <h3>Are the templates ATS friendly?</h3>
+            <p>They use real text, simple headings, and conservative section structure. You should still review the final PDF for each application.</p>
+          </article>
+          <article>
+            <h3>Can I back up my resume?</h3>
+            <p>Yes. Export JSON to keep a backup or move the draft to another browser, then import it later.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <footer class="site-footer suite-footer">
+      <div class="suite-footer-head">
+        <strong>More free local-first browser tools</strong>
+        <span>Freely tools run in your browser when possible, with no accounts, uploads, watermarks, or download gates.</span>
+      </div>
+      <nav class="suite-footer-nav" aria-label="Freely tools">
+        <a class="suite-link" href="https://computefreely.com/"><strong>Compute Freely</strong><span>Free local browser tools</span></a>
+        <a class="suite-link" href="https://qrfreely.com/"><strong>QR Freely</strong><span>Free QR code generator</span></a>
+        <a class="suite-link" href="https://videofreely.com/"><strong>Video Freely</strong><span>Browser video converter</span></a>
+        <a class="suite-link" href="https://pdffreely.com/"><strong>PDF Freely</strong><span>PDF merge, split, and organize</span></a>
+        <a class="suite-link" href="https://fillfreely.com/"><strong>Fill Freely</strong><span>PDF form filler and signer</span></a>
+        <a class="suite-link" href="https://imagefreely.com/"><strong>Image Freely</strong><span>Image editor and bulk converter</span></a>
+        <a class="suite-link" href="https://resumefreely.com/"><strong>Resume Freely</strong><span>Resume and cover letter builder</span></a>
+      </nav>
+      <nav class="suite-footer-meta" aria-label="Project links">
+        <a href="https://github.com/ComputeFreely/resumefreely.com">Source on GitHub</a>
+        <a href="https://github.com/ComputeFreely/resumefreely.com/issues/new">Report an issue</a>
+        <a href="mailto:info@computefreely.com">info@computefreely.com</a>
+      </nav>
+    </footer>
+  </body>
+</html>

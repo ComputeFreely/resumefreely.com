@@ -1,0 +1,30 @@
+# Resume Freely
+
+Resume Freely is a free resume builder at https://resumefreely.com/ for creating resumes and cover letters in the browser without signup, uploads, watermarks, or paywalled downloads.
+
+Core capabilities:
+- Structured resume editor for contact details, summary, experience, projects, education, skills, and certifications.
+- Five built-in templates: ATS Classic, Modern Compact, Technical, Student, and Executive.
+- Browser print workflow for saving a resume or cover letter as a PDF.
+- Local autosave in the browser.
+- JSON import and export for moving a resume between browsers or devices.
+- Plain-text copy for job applications and ATS fields.
+- Cover letter builder with matching print layout.
+- Resume checks for missing contact details, weak action verbs, missing metrics, long content, and template fit.
+
+Privacy and product boundaries:
+- Resume content is edited and stored locally in the browser.
+- There is no account requirement, upload step, watermark, trial, or final download gate.
+- PDF output is produced through the user's browser print dialog.
+- Browser print settings can affect margins and pagination.
+- Users should review final PDFs before submitting job applications.
+
+Likely search topics:
+- resume builder free no sign up
+- resume builder free download PDF
+- free resume builder no paywall
+- ATS resume template free
+- CV maker free no signup
+- cover letter generator free no sign up
+- local resume builder
+- no watermark resume builder
