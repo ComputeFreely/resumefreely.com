@@ -99,6 +99,7 @@ function cacheElements() {
     "certificationsList",
     "letterFields",
     "letterBodyInput",
+    "printCurrentButton",
     "templateSelect",
     "fontPairSelect",
     "densitySelect",
@@ -162,8 +163,7 @@ function bindEvents() {
     }
   });
 
-  document.getElementById("printResumeButton").addEventListener("click", () => printDocument("resume"));
-  document.getElementById("printLetterButton").addEventListener("click", () => printDocument("letter"));
+  els.printCurrentButton.addEventListener("click", () => printDocument(activeMode));
   document.getElementById("copyTextButton").addEventListener("click", copyActiveText);
   document.getElementById("exportButton").addEventListener("click", exportJson);
   document.getElementById("sampleButton").addEventListener("click", () => replaceState(sampleState(), "Sample loaded"));
@@ -367,6 +367,7 @@ function renderPreview() {
   renderResumePreview();
   renderLetterPreview();
   els.documentMeta.textContent = activeMode === "resume" ? "Resume" : "Cover letter";
+  els.printCurrentButton.textContent = activeMode === "resume" ? "Save resume PDF" : "Save letter PDF";
   els.resumePreview.hidden = activeMode !== "resume";
   els.letterPreview.hidden = activeMode !== "letter";
 }
