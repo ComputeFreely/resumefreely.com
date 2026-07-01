@@ -387,14 +387,25 @@ function renderResumePreview() {
     resume.basics.github,
   ].filter(Boolean);
 
-  const sections = [
-    summarySection(resume.summary),
-    experienceSection(resume.experience),
-    projectSection(resume.projects),
-    educationSection(resume.education),
-    skillsSection(resume.skills),
-    certificationSection(resume.certifications),
-  ].filter(Boolean);
+  const sectionHtml = {
+    summary: summarySection(resume.summary),
+    experience: experienceSection(resume.experience),
+    projects: projectSection(resume.projects),
+    education: educationSection(resume.education),
+    skills: skillsSection(resume.skills),
+    certifications: certificationSection(resume.certifications),
+  };
+
+  const sections = settings.template === "modern"
+    ? modernResumeSections(sectionHtml)
+    : [
+      sectionHtml.summary,
+      sectionHtml.experience,
+      sectionHtml.projects,
+      sectionHtml.education,
+      sectionHtml.skills,
+      sectionHtml.certifications,
+    ].filter(Boolean).join("");
 
   els.resumePreview.innerHTML = `
     <header class="resume-header">
@@ -402,7 +413,16 @@ function renderResumePreview() {
       ${resume.basics.headline ? `<p class="resume-title">${escapeHtml(resume.basics.headline)}</p>` : ""}
       ${contact.length ? `<div class="contact-line">${contact.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div>` : ""}
     </header>
-    ${sections.join("")}
+    ${sections}
+  `;
+}
+
+function modernResumeSections(sectionHtml) {
+  const main = [sectionHtml.summary, sectionHtml.experience, sectionHtml.projects].filter(Boolean).join("");
+  const side = [sectionHtml.skills, sectionHtml.education, sectionHtml.certifications].filter(Boolean).join("");
+  return `
+    ${main ? `<div class="resume-main-column">${main}</div>` : ""}
+    ${side ? `<aside class="resume-side-column" aria-label="Skills, education, and certifications">${side}</aside>` : ""}
   `;
 }
 

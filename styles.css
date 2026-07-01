@@ -445,6 +445,14 @@ body .resume-shell.app-shell {
   gap: 0.3rem;
 }
 
+.resume-main-column,
+.resume-side-column {
+  display: grid;
+  align-content: start;
+  gap: var(--doc-space);
+  min-width: 0;
+}
+
 .resume-section h2 {
   color: var(--doc-accent);
   font-family: var(--doc-heading-font);
@@ -522,16 +530,24 @@ body .resume-shell.app-shell {
   grid-column: 1 / -1;
 }
 
-.template-modern .resume-section[data-section="skills"],
-.template-modern .resume-section[data-section="education"],
-.template-modern .resume-section[data-section="certifications"] {
-  grid-column: 2;
+.template-modern .resume-main-column {
+  grid-column: 1;
+  grid-row: 2;
 }
 
-.template-modern .resume-section[data-section="summary"],
-.template-modern .resume-section[data-section="experience"],
-.template-modern .resume-section[data-section="projects"] {
-  grid-column: 1;
+.template-modern .resume-side-column {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.template-modern .resume-side-column .resume-entry-head,
+.template-modern .resume-side-column .skill-row {
+  grid-template-columns: 1fr;
+  gap: 0.08rem;
+}
+
+.template-modern .resume-side-column .resume-entry-meta {
+  white-space: normal;
 }
 
 .template-technical .resume-section[data-section="skills"] {
@@ -638,6 +654,12 @@ body .resume-shell.app-shell {
   .template-modern,
   .resume-preview-pane {
     grid-template-columns: 1fr;
+  }
+
+  .template-modern .resume-main-column,
+  .template-modern .resume-side-column {
+    grid-column: 1;
+    grid-row: auto;
   }
 
   .resume-document,
