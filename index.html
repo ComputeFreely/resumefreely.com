@@ -20,6 +20,9 @@
     <link rel="sitemap" type="application/xml" href="/sitemap.xml">
     <link rel="alternate" type="text/plain" href="/llms.txt" title="AI-readable site summary">
     <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600;700;800&family=Lato:wght@400;700;900&family=Libre+Baskerville:wght@400;700&family=Lora:wght@400;600;700&family=Merriweather:wght@400;700;900&family=Open+Sans:wght@400;600;700&family=Source+Sans+3:wght@400;600;700;800&family=Work+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="assets/shared/freely-ui.css">
     <script type="application/ld+json">
@@ -133,11 +136,6 @@
         </span>
       </a>
       <div class="topbar-actions">
-        <nav class="nav-links" aria-label="Main navigation">
-          <a href="#builder">Builder</a>
-          <a href="#templates">Templates</a>
-          <a href="#faq">FAQ</a>
-        </nav>
         <div class="guarantee-pills" aria-label="Site guarantees">
           <span class="status-pill">Free PDF</span>
           <span class="status-pill">No signup</span>
@@ -304,9 +302,15 @@
           </div>
           <div class="field-grid two">
             <label class="field">
-              <span>Template</span>
+              <span>Layout</span>
               <select id="templateSelect"></select>
             </label>
+            <label class="field">
+              <span>Typeface</span>
+              <select id="fontPairSelect"></select>
+            </label>
+          </div>
+          <div class="field-grid two">
             <label class="field">
               <span>Density</span>
               <select id="densitySelect">
@@ -315,15 +319,9 @@
                 <option value="roomy">Roomy</option>
               </select>
             </label>
-          </div>
-          <div class="field-grid two">
             <label class="field">
               <span>Accent</span>
               <input id="accentInput" type="color" value="#0f948c">
-            </label>
-            <label class="checkline preview-toggle">
-              <input id="showGuidesInput" type="checkbox">
-              <span>Show page edge</span>
             </label>
           </div>
           <div class="template-notes" id="templateNotes"></div>

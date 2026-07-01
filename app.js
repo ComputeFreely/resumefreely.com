@@ -23,6 +23,33 @@ const templates = {
   },
 };
 
+const fontPairs = {
+  system: {
+    label: "System professional",
+    note: "System UI headings with a traditional serif body for conservative PDF output.",
+  },
+  classic: {
+    label: "Libre + Source Sans",
+    note: "Classic serif headings with a highly legible sans body.",
+  },
+  modern: {
+    label: "Work Sans + Open Sans",
+    note: "Modern sans pairing with more display weight in headings and readable body text.",
+  },
+  technical: {
+    label: "IBM Plex Sans + Mono",
+    note: "Technical tone with a coordinated sans and mono family.",
+  },
+  editorial: {
+    label: "Merriweather + Lato",
+    note: "Stronger editorial headings with a clean sans body.",
+  },
+  warm: {
+    label: "Lora + Lato",
+    note: "Warmer serif headings with a restrained professional body.",
+  },
+};
+
 const actionVerbs = [
   "achieved",
   "automated",
@@ -73,9 +100,9 @@ function cacheElements() {
     "letterFields",
     "letterBodyInput",
     "templateSelect",
+    "fontPairSelect",
     "densitySelect",
     "accentInput",
-    "showGuidesInput",
     "templateNotes",
     "scoreBadge",
     "checkList",
@@ -148,6 +175,11 @@ function bindEvents() {
     afterEdit();
     renderTemplateNote();
   });
+  els.fontPairSelect.addEventListener("change", () => {
+    state.settings.fontPair = els.fontPairSelect.value;
+    afterEdit();
+    renderTemplateNote();
+  });
   els.densitySelect.addEventListener("change", () => {
     state.settings.density = els.densitySelect.value;
     afterEdit();
@@ -155,9 +187,6 @@ function bindEvents() {
   els.accentInput.addEventListener("input", () => {
     state.settings.accent = els.accentInput.value;
     afterEdit();
-  });
-  els.showGuidesInput.addEventListener("change", () => {
-    els.pagePreviewWrap.classList.toggle("show-guides", els.showGuidesInput.checked);
   });
 
   els.importInput.addEventListener("change", importJson);
@@ -171,7 +200,11 @@ function hydrateTemplateControls() {
   els.templateSelect.innerHTML = Object.entries(templates)
     .map(([value, template]) => `<option value="${value}">${escapeHtml(template.label)}</option>`)
     .join("");
+  els.fontPairSelect.innerHTML = Object.entries(fontPairs)
+    .map(([value, fontPair]) => `<option value="${value}">${escapeHtml(fontPair.label)}</option>`)
+    .join("");
   els.templateSelect.value = state.settings.template;
+  els.fontPairSelect.value = state.settings.fontPair;
   els.densitySelect.value = state.settings.density;
   els.accentInput.value = state.settings.accent;
   renderTemplateNote();
@@ -341,7 +374,7 @@ function renderPreview() {
 function renderResumePreview() {
   const { resume, settings } = state;
   const accent = safeColor(settings.accent);
-  els.resumePreview.className = `resume-document ${settings.density} template-${settings.template}`;
+  els.resumePreview.className = `resume-document ${settings.density} template-${settings.template} font-${settings.fontPair}`;
   els.resumePreview.style.setProperty("--doc-accent", accent);
 
   const contact = [
@@ -481,7 +514,7 @@ function resumeEntry({ title, meta, subtitle, bullets }) {
 function renderLetterPreview() {
   const { resume, letter, settings } = state;
   const accent = safeColor(settings.accent);
-  els.letterPreview.className = `letter-document ${settings.density}`;
+  els.letterPreview.className = `letter-document ${settings.density} font-${settings.fontPair}`;
   els.letterPreview.style.setProperty("--doc-accent", accent);
   const body = paragraphLines(letter.body || "");
   const recipient = [
@@ -574,9 +607,10 @@ function getChecks() {
 
 function renderTemplateNote() {
   const template = templates[state.settings.template] || templates.ats;
+  const fontPair = fontPairs[state.settings.fontPair] || fontPairs.classic;
   els.templateNotes.innerHTML = `
     <p class="template-note"><strong>${escapeHtml(template.label)}:</strong> ${escapeHtml(template.note)}</p>
-    <p class="template-note">Use browser print settings with background graphics enabled when you want the accent color in the PDF.</p>
+    <p class="template-note"><strong>${escapeHtml(fontPair.label)}:</strong> ${escapeHtml(fontPair.note)}</p>
   `;
 }
 
@@ -749,6 +783,7 @@ function normalizeState(input) {
     letter: { ...base.letter, ...(input.letter || {}) },
   };
   merged.settings.template = templates[merged.settings.template] ? merged.settings.template : "ats";
+  merged.settings.fontPair = fontPairs[merged.settings.fontPair] ? merged.settings.fontPair : "classic";
   merged.settings.density = ["compact", "standard", "roomy"].includes(merged.settings.density) ? merged.settings.density : "standard";
   merged.settings.accent = safeColor(merged.settings.accent);
   return merged;
@@ -763,6 +798,7 @@ function blankState() {
   return {
     settings: {
       template: "ats",
+      fontPair: "classic",
       density: "standard",
       accent: "#0f948c",
     },
@@ -800,6 +836,7 @@ function sampleState() {
   return {
     settings: {
       template: "ats",
+      fontPair: "classic",
       density: "standard",
       accent: "#0f948c",
     },
