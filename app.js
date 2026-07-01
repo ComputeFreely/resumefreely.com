@@ -25,28 +25,28 @@ const templates = {
 
 const fontPairs = {
   system: {
-    label: "System professional",
-    note: "System UI headings with a traditional serif body for conservative PDF output.",
+    label: "ATS safe system",
+    note: "Uses familiar installed sans-serif fonts like Aptos, Arial, Helvetica, or Segoe UI.",
+  },
+  carlito: {
+    label: "Carlito",
+    note: "Calibri-like open font with a familiar corporate resume feel and efficient spacing.",
   },
   classic: {
-    label: "Libre + Source Sans",
-    note: "Classic serif headings with a highly legible sans body.",
+    label: "Source Serif + Sans",
+    note: "A coordinated Adobe serif/sans family for a polished traditional document.",
   },
-  modern: {
-    label: "Work Sans + Open Sans",
-    note: "Modern sans pairing with more display weight in headings and readable body text.",
+  garamond: {
+    label: "EB Garamond + Carlito",
+    note: "Formal serif tone for academic, legal, editorial, and executive resumes.",
   },
   technical: {
     label: "IBM Plex Sans + Mono",
-    note: "Technical tone with a coordinated sans and mono family.",
+    note: "Precise technical style with coordinated sans text and mono metadata.",
   },
-  editorial: {
-    label: "Merriweather + Lato",
-    note: "Stronger editorial headings with a clean sans body.",
-  },
-  warm: {
-    label: "Lora + Lato",
-    note: "Warmer serif headings with a restrained professional body.",
+  accessible: {
+    label: "Atkinson Hyperlegible",
+    note: "High-legibility letterforms for a clear, practical, accessible resume.",
   },
 };
 
@@ -784,7 +784,7 @@ function normalizeState(input) {
     letter: { ...base.letter, ...(input.letter || {}) },
   };
   merged.settings.template = templates[merged.settings.template] ? merged.settings.template : "ats";
-  merged.settings.fontPair = fontPairs[merged.settings.fontPair] ? merged.settings.fontPair : "classic";
+  merged.settings.fontPair = fontPairs[merged.settings.fontPair] ? merged.settings.fontPair : "carlito";
   merged.settings.density = ["compact", "standard", "roomy"].includes(merged.settings.density) ? merged.settings.density : "standard";
   merged.settings.accent = safeColor(merged.settings.accent);
   return merged;
@@ -799,7 +799,7 @@ function blankState() {
   return {
     settings: {
       template: "ats",
-      fontPair: "classic",
+      fontPair: "carlito",
       density: "standard",
       accent: "#0f948c",
     },
@@ -837,7 +837,7 @@ function sampleState() {
   return {
     settings: {
       template: "ats",
-      fontPair: "classic",
+      fontPair: "carlito",
       density: "standard",
       accent: "#0f948c",
     },

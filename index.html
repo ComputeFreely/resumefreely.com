@@ -22,7 +22,7 @@
     <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600;700;800&family=Lato:wght@400;700;900&family=Libre+Baskerville:wght@400;700&family=Lora:wght@400;600;700&family=Merriweather:wght@400;700;900&family=Open+Sans:wght@400;600;700&family=Source+Sans+3:wght@400;600;700;800&family=Work+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Carlito:wght@400;700&family=EB+Garamond:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600;700;800&family=Source+Sans+3:wght@400;600;700;800&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="assets/shared/freely-ui.css">
     <script type="application/ld+json">
@@ -135,28 +135,13 @@
           <small>Local resume builder</small>
         </span>
       </a>
-      <div class="topbar-actions">
-        <div class="guarantee-pills" aria-label="Site guarantees">
-          <span class="status-pill">Free PDF</span>
-          <span class="status-pill">No signup</span>
-          <span class="status-pill">No upload</span>
-        </div>
-      </div>
     </header>
 
     <main class="resume-shell app-shell" id="builder">
       <section class="workspace-pane editor-pane" aria-labelledby="builderTitle">
-        <div class="workspace-header">
-          <div>
-            <p class="eyebrow">Resume Builder</p>
-            <h1 id="builderTitle">Build a clean resume and cover letter locally</h1>
-          </div>
+        <div class="workspace-header compact-header">
+          <h1 class="sr-only" id="builderTitle">Resume builder</h1>
           <div class="engine-badge" id="saveStatus" aria-live="polite">Autosaved</div>
-        </div>
-
-        <div class="promise-strip" aria-label="Freely promise">
-          <strong>No account. No upload. No watermark. No download gate.</strong>
-          <a href="https://computefreely.com/">Compute Freely promise</a>
         </div>
 
         <div class="mode-tabs" role="tablist" aria-label="Document editor">
@@ -284,13 +269,8 @@
       </section>
 
       <aside class="preview-pane resume-preview-pane" aria-labelledby="previewTitle">
-        <div class="preview-header">
-          <div>
-            <p class="eyebrow">Preview</p>
-            <h2 id="previewTitle">Printable document</h2>
-          </div>
-          <span class="preview-meta" id="documentMeta">Resume</span>
-        </div>
+        <h2 class="sr-only" id="previewTitle">Document preview</h2>
+        <span class="sr-only" id="documentMeta">Resume</span>
 
         <section class="panel options-panel" aria-labelledby="templateTitle" id="templates">
           <div class="panel-heading">
@@ -323,8 +303,13 @@
               <input id="accentInput" type="color" value="#0f948c">
             </label>
           </div>
-          <div class="template-notes" id="templateNotes"></div>
+          <div class="template-notes sr-only" id="templateNotes"></div>
         </section>
+
+        <div class="page-preview-wrap" id="pagePreviewWrap">
+          <article class="resume-document" id="resumePreview" aria-label="Resume preview"></article>
+          <article class="letter-document" id="letterPreview" aria-label="Cover letter preview" hidden></article>
+        </div>
 
         <section class="panel score-panel" aria-labelledby="checksTitle">
           <div class="panel-heading">
@@ -336,11 +321,6 @@
           </div>
           <ul class="check-list" id="checkList"></ul>
         </section>
-
-        <div class="page-preview-wrap" id="pagePreviewWrap">
-          <article class="resume-document" id="resumePreview" aria-label="Resume preview"></article>
-          <article class="letter-document" id="letterPreview" aria-label="Cover letter preview" hidden></article>
-        </div>
       </aside>
     </main>
 
