@@ -167,7 +167,6 @@ function bindEvents() {
   document.getElementById("copyTextButton").addEventListener("click", copyActiveText);
   document.getElementById("exportButton").addEventListener("click", exportJson);
   document.getElementById("sampleButton").addEventListener("click", () => replaceState(sampleState(), "Sample loaded"));
-  document.getElementById("blankButton").addEventListener("click", () => replaceState(blankState(), "Blank draft ready"));
   document.getElementById("clearStorageButton").addEventListener("click", clearLocalDraft);
 
   els.templateSelect.addEventListener("change", () => {
@@ -709,6 +708,10 @@ function replaceState(nextState, message) {
 }
 
 function clearLocalDraft() {
+  if (!window.confirm("Clear this resume and cover letter draft? This cannot be undone.")) {
+    return;
+  }
+
   try {
     localStorage.removeItem(STORAGE_KEY);
   } catch {
