@@ -1,4 +1,33 @@
 const STORAGE_KEY = "resumefreely.document.v1";
+const CORRUPT_STORAGE_KEY = `${STORAGE_KEY}.corrupt`;
+
+// Local storage can throw in locked-down browser contexts (site data blocked,
+// some private modes). Every access goes through this helper so a blocked
+// store degrades to "Autosave unavailable" instead of killing the script.
+const storage = {
+  get(key) {
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  },
+  set(key, value) {
+    try {
+      localStorage.setItem(key, value);
+      return true;
+    } catch {
+      return false;
+    }
+  },
+  remove(key) {
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      // Nothing to clean up if storage is unavailable.
+    }
+  },
+};
 
 const templates = {
   ats: {
@@ -103,6 +132,7 @@ function cacheElements() {
     "templateSelect",
     "fontPairSelect",
     "densitySelect",
+    "paperSelect",
     "accentInput",
     "templateNotes",
     "scoreBadge",
@@ -138,6 +168,11 @@ function bindEvents() {
       const field = target.dataset.field;
       if (state.resume[section] && state.resume[section][index]) {
         state.resume[section][index][field] = target.value;
+        if ((entryTitleFields[section] || [])[0] === field) {
+          const card = target.closest(".entry-card");
+          const titleEl = card ? card.querySelector(".entry-title") : null;
+          if (titleEl) titleEl.textContent = entryTitle(section, state.resume[section][index]);
+        }
         afterEdit();
       }
     }
@@ -183,6 +218,11 @@ function bindEvents() {
     state.settings.density = els.densitySelect.value;
     afterEdit();
   });
+  els.paperSelect.addEventListener("change", () => {
+    state.settings.paper = els.paperSelect.value;
+    applyPaperSize();
+    afterEdit();
+  });
   els.accentInput.addEventListener("input", () => {
     state.settings.accent = els.accentInput.value;
     afterEdit();
@@ -192,6 +232,10 @@ function bindEvents() {
 
   window.addEventListener("afterprint", () => {
     document.body.removeAttribute("data-print-mode");
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") flushSave();
   });
 }
 
@@ -205,8 +249,19 @@ function hydrateTemplateControls() {
   els.templateSelect.value = state.settings.template;
   els.fontPairSelect.value = state.settings.fontPair;
   els.densitySelect.value = state.settings.density;
+  els.paperSelect.value = state.settings.paper;
   els.accentInput.value = state.settings.accent;
+  applyPaperSize();
   renderTemplateNote();
+}
+
+function applyPaperSize() {
+  const isA4 = state.settings.paper === "a4";
+  const letterLink = document.getElementById("printLetterCss");
+  const a4Link = document.getElementById("printA4Css");
+  if (letterLink) letterLink.disabled = isA4;
+  if (a4Link) a4Link.disabled = !isA4;
+  document.body.classList.toggle("paper-a4", isA4);
 }
 
 function renderEditor() {
@@ -325,9 +380,9 @@ function entryShell(section, index, title, body) {
       <div class="entry-head">
         <h3 class="entry-title">${escapeHtml(title)}</h3>
         <div class="entry-actions">
-          <button class="mini-button" type="button" data-move="${section}" data-index="${index}" data-delta="-1" ${index === 0 ? "disabled" : ""}>Up</button>
-          <button class="mini-button" type="button" data-move="${section}" data-index="${index}" data-delta="1" ${index === entries.length - 1 ? "disabled" : ""}>Down</button>
-          <button class="mini-button danger" type="button" data-remove="${section}" data-index="${index}">Remove</button>
+          <button class="mini-button" type="button" data-move="${section}" data-index="${index}" data-delta="-1" aria-label="${attr(`Move ${title} up`)}" ${index === 0 ? "disabled" : ""}>Up</button>
+          <button class="mini-button" type="button" data-move="${section}" data-index="${index}" data-delta="1" aria-label="${attr(`Move ${title} down`)}" ${index === entries.length - 1 ? "disabled" : ""}>Down</button>
+          <button class="mini-button danger" type="button" data-remove="${section}" data-index="${index}" aria-label="${attr(`Remove ${title}`)}">Remove</button>
         </div>
       </div>
       ${body}
@@ -547,8 +602,9 @@ function renderLetterPreview() {
       <h1>${escapeHtml(resume.basics.name || "Your Name")}</h1>
       <p class="letter-meta">${escapeHtml([resume.basics.email, resume.basics.phone, resume.basics.location].filter(Boolean).join(" / "))}</p>
     </header>
-    <p class="letter-meta">${escapeHtml(letter.date || todayLabel())}</p>
+    <p class="letter-meta">${escapeHtml([letter.city, letter.date || todayLabel()].filter(Boolean).join(" / "))}</p>
     ${recipient.length ? `<p class="letter-recipient">${recipient.map(escapeHtml).join("<br>")}</p>` : ""}
+    ${trim(letter.role) ? `<p class="letter-subject">Re: ${escapeHtml(letter.role)}</p>` : ""}
     <p>Dear ${escapeHtml(letter.hiringManager || "Hiring Team")},</p>
     <div class="letter-body">
       ${body.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
@@ -565,8 +621,8 @@ function renderChecks() {
     .map((check) => `<li class="${check.passed ? "" : check.level}">${escapeHtml(check.text)}</li>`)
     .join("");
 
-  els.saveStatus.classList.toggle("danger", passed <= checks.length * 0.45);
-  els.saveStatus.classList.toggle("warn", passed > checks.length * 0.45 && passed < checks.length * 0.75);
+  els.scoreBadge.classList.toggle("danger", passed <= checks.length * 0.45);
+  els.scoreBadge.classList.toggle("warn", passed > checks.length * 0.45 && passed < checks.length * 0.75);
 }
 
 function getChecks() {
@@ -654,28 +710,41 @@ function afterEdit() {
 function scheduleSave() {
   els.saveStatus.textContent = "Saving";
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      els.saveStatus.textContent = "Autosaved";
-      els.saveStatus.classList.remove("danger");
-    } catch {
-      els.saveStatus.textContent = "Autosave unavailable";
-      els.saveStatus.classList.add("danger");
-    }
-  }, 220);
+  saveTimer = setTimeout(flushSave, 220);
+}
+
+function flushSave() {
+  if (saveTimer === null) return;
+  clearTimeout(saveTimer);
+  saveTimer = null;
+  if (storage.set(STORAGE_KEY, JSON.stringify(state))) {
+    els.saveStatus.textContent = "Autosaved";
+    els.saveStatus.classList.remove("danger");
+  } else {
+    els.saveStatus.textContent = "Autosave unavailable";
+    els.saveStatus.classList.add("danger");
+  }
 }
 
 function addEntry(section) {
   state.resume[section].push(newEntry(section));
   renderEditor();
   afterEdit();
+  const cards = sectionCards(section);
+  const card = cards[cards.length - 1];
+  const firstInput = card ? card.querySelector("input, textarea") : null;
+  if (firstInput) firstInput.focus();
 }
 
 function removeEntry(section, index) {
+  const entry = (state.resume[section] || [])[index];
+  if (!entry) return;
+  if (!window.confirm(`Remove "${entryTitle(section, entry)}"? This cannot be undone.`)) return;
   state.resume[section].splice(index, 1);
   renderEditor();
   afterEdit();
+  const addButton = document.querySelector(`button[data-add="${section}"]`);
+  if (addButton) addButton.focus();
 }
 
 function moveEntry(section, index, delta) {
@@ -686,6 +755,19 @@ function moveEntry(section, index, delta) {
   entries.splice(next, 0, entry);
   renderEditor();
   afterEdit();
+  const card = sectionCards(section)[next];
+  if (card) {
+    const sameButton = card.querySelector(`button[data-move][data-delta="${delta}"]`);
+    const target = sameButton && !sameButton.disabled
+      ? sameButton
+      : card.querySelector(".entry-actions button:not([disabled])");
+    if (target) target.focus();
+  }
+}
+
+function sectionCards(section) {
+  const container = els[`${section}List`];
+  return container ? container.querySelectorAll(".entry-card") : [];
 }
 
 function newEntry(section) {
@@ -697,6 +779,19 @@ function newEntry(section) {
     certifications: { name: "", issuer: "", date: "", details: "" },
   };
   return { ...defaults[section] };
+}
+
+const entryTitleFields = {
+  experience: ["role", "Experience"],
+  projects: ["name", "Project"],
+  education: ["school", "Education"],
+  skills: ["name", "Skill group"],
+  certifications: ["name", "Certification"],
+};
+
+function entryTitle(section, entry) {
+  const [field, fallback] = entryTitleFields[section] || ["name", "Entry"];
+  return trim(entry && entry[field]) || fallback;
 }
 
 function replaceState(nextState, message) {
@@ -712,12 +807,10 @@ function clearLocalDraft() {
     return;
   }
 
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-  } catch {
-    // Local storage can be disabled in locked-down browser contexts.
-  }
   state = blankState();
+  // Persist the cleared state immediately so a reload doesn't resurrect the
+  // sample document.
+  storage.set(STORAGE_KEY, JSON.stringify(state));
   hydrateTemplateControls();
   renderEditor();
   renderPreview();
@@ -768,6 +861,12 @@ function importJson() {
   reader.addEventListener("load", () => {
     try {
       const parsed = JSON.parse(String(reader.result || "{}"));
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed.resume) || !parsed.resume || typeof parsed.resume !== "object") {
+        els.saveStatus.textContent = "That file doesn't look like a Resume Freely export.";
+        els.saveStatus.classList.add("danger");
+        return;
+      }
+      els.saveStatus.classList.remove("danger");
       replaceState(parsed, "JSON imported");
     } catch {
       els.saveStatus.textContent = "Import failed";
@@ -776,15 +875,23 @@ function importJson() {
       els.importInput.value = "";
     }
   });
+  reader.addEventListener("error", () => {
+    els.saveStatus.textContent = "Could not read that file.";
+    els.saveStatus.classList.add("danger");
+    els.importInput.value = "";
+  });
   reader.readAsText(file);
 }
 
 function loadState() {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return normalizeState(JSON.parse(stored));
-  } catch {
-    localStorage.removeItem(STORAGE_KEY);
+  const stored = storage.get(STORAGE_KEY);
+  if (stored) {
+    try {
+      return normalizeState(JSON.parse(stored));
+    } catch {
+      storage.set(CORRUPT_STORAGE_KEY, stored);
+      storage.remove(STORAGE_KEY);
+    }
   }
   return sampleState();
 }
@@ -808,6 +915,7 @@ function normalizeState(input) {
   merged.settings.template = templates[merged.settings.template] ? merged.settings.template : "ats";
   merged.settings.fontPair = fontPairs[merged.settings.fontPair] ? merged.settings.fontPair : "carlito";
   merged.settings.density = ["compact", "standard", "roomy"].includes(merged.settings.density) ? merged.settings.density : "standard";
+  merged.settings.paper = ["letter", "a4"].includes(merged.settings.paper) ? merged.settings.paper : "letter";
   merged.settings.accent = safeColor(merged.settings.accent);
   return merged;
 }
@@ -823,6 +931,7 @@ function blankState() {
       template: "ats",
       fontPair: "carlito",
       density: "standard",
+      paper: "letter",
       accent: "#0f948c",
     },
     resume: {
@@ -847,7 +956,7 @@ function blankState() {
       company: "",
       role: "",
       hiringManager: "",
-      date: todayLabel(),
+      date: "",
       city: "",
       recipientLocation: "",
       body: "",
@@ -861,6 +970,7 @@ function sampleState() {
       template: "ats",
       fontPair: "carlito",
       density: "standard",
+      paper: "letter",
       accent: "#0f948c",
     },
     resume: {
@@ -922,7 +1032,7 @@ function sampleState() {
       company: "Acme Products",
       role: "Product Operations Lead",
       hiringManager: "Hiring Team",
-      date: todayLabel(),
+      date: "",
       city: "Seattle, WA",
       recipientLocation: "Remote",
       body: "I am excited to apply for the Product Operations Lead role at Acme Products. My background is strongest where product teams need clearer operating systems, better customer feedback loops, and launch processes that reduce risk without slowing good work.\n\nIn my current role, I reduced quarterly launch planning cycle time by 34%, built a voice-of-customer tagging model across 12,000 support tickets, and led readiness reviews for 18 major releases. I enjoy working across product, engineering, design, marketing, and support because durable product operations only work when every team can trust the process.\n\nI would value the chance to bring that operating discipline to Acme Products and help your teams ship with better visibility, stronger prioritization, and fewer last-minute surprises.",
@@ -980,11 +1090,12 @@ function letterText() {
     r.basics.name,
     [r.basics.email, r.basics.phone, r.basics.location].filter(Boolean).join(" | "),
     "",
-    l.date || todayLabel(),
+    [l.city, l.date || todayLabel()].filter(Boolean).join(" / "),
     l.hiringManager || "Hiring Team",
     l.company,
     l.recipientLocation,
     "",
+    trim(l.role) ? `Re: ${l.role}` : "",
     `Dear ${l.hiringManager || "Hiring Team"},`,
     "",
     l.body,

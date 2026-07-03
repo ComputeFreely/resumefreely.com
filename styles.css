@@ -120,6 +120,18 @@ body .resume-shell.app-shell {
   cursor: pointer;
 }
 
+.file-button:has(+ input:focus-visible) {
+  outline: 3px solid var(--freely-focus);
+  outline-offset: 3px;
+}
+
+.print-hint {
+  align-self: center;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
 .document-editor {
   display: grid;
   gap: 0.85rem;
@@ -267,6 +279,18 @@ body .resume-shell.app-shell {
   font-weight: 950;
 }
 
+.score-badge.warn {
+  border-color: rgba(199, 93, 35, 0.28);
+  color: var(--orange-deep);
+  background: rgba(199, 93, 35, 0.1);
+}
+
+.score-badge.danger {
+  border-color: rgba(180, 35, 24, 0.28);
+  color: var(--red);
+  background: rgba(180, 35, 24, 0.1);
+}
+
 .check-list {
   display: grid;
   gap: 0.45rem;
@@ -325,7 +349,7 @@ body .resume-shell.app-shell {
 .letter-document {
   width: min(100%, 8.5in);
   min-height: 11in;
-  padding: 0.58in;
+  padding: 0.45in;
   color: #171b1a;
   background: #ffffff;
   box-shadow: 0 18px 50px rgba(23, 33, 31, 0.17);
@@ -349,6 +373,12 @@ body .resume-shell.app-shell {
 .letter-document.roomy {
   --doc-space: 0.82rem;
   --doc-font-size: 11pt;
+}
+
+body.paper-a4 .resume-document,
+body.paper-a4 .letter-document {
+  width: min(100%, 210mm);
+  min-height: 297mm;
 }
 
 .resume-document {
@@ -432,6 +462,7 @@ body .resume-shell.app-shell {
   color: #3d4543;
   font-family: var(--doc-meta-font);
   font-size: 8.9pt;
+  overflow-wrap: anywhere;
 }
 
 .contact-line span:not(:last-child)::after {
@@ -469,7 +500,7 @@ body .resume-shell.app-shell {
 
 .resume-entry-head {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) fit-content(40%);
   gap: 0.4rem;
   align-items: baseline;
 }
@@ -485,12 +516,13 @@ body .resume-shell.app-shell {
   color: #56615e;
   font-family: var(--doc-meta-font);
   font-size: 8.8pt;
-  white-space: nowrap;
+  text-align: right;
 }
 
 .resume-subtitle {
   color: #424b49;
   font-style: italic;
+  overflow-wrap: anywhere;
 }
 
 .resume-document ul {
@@ -547,7 +579,7 @@ body .resume-shell.app-shell {
 }
 
 .template-modern .resume-side-column .resume-entry-meta {
-  white-space: normal;
+  text-align: left;
 }
 
 .template-technical .resume-section[data-section="skills"] {
@@ -622,6 +654,11 @@ body .resume-shell.app-shell {
   font-size: 9.2pt;
 }
 
+.letter-subject {
+  font-family: var(--doc-meta-font);
+  font-weight: 700;
+}
+
 .letter-body {
   display: grid;
   gap: 0.8rem;
@@ -675,16 +712,11 @@ body .resume-shell.app-shell {
   }
 
   .resume-entry-meta {
-    white-space: normal;
+    text-align: left;
   }
 }
 
 @media print {
-  @page {
-    size: letter;
-    margin: 0.45in;
-  }
-
   html,
   body {
     width: auto;
@@ -727,6 +759,18 @@ body .resume-shell.app-shell {
     box-shadow: none !important;
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
+    orphans: 2;
+    widows: 2;
+  }
+
+  .resume-header,
+  .resume-entry,
+  .skill-row {
+    break-inside: avoid;
+  }
+
+  .resume-section h2 {
+    break-after: avoid;
   }
 
   body[data-print-mode="resume"] .letter-document,

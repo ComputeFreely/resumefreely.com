@@ -10,7 +10,7 @@ Core capabilities:
 - JSON import and export for moving a resume between browsers or devices.
 - Plain-text copy for job applications and ATS fields.
 - Cover letter builder with matching print layout.
-- Resume checks for missing contact details, weak action verbs, missing metrics, long content, and template fit.
+- Resume checks for missing contact details, weak action verbs, missing metrics, and long content.
 
 Privacy and product boundaries:
 - Resume content is edited and stored locally in the browser.
